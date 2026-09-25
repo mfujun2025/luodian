@@ -44,64 +44,17 @@
   <section class="section">
     <div class="container">
       <div class="notice" style="margin-bottom:24px;">
-        <strong>示例数据说明：</strong>以下商家信息为<b>演示占位数据</b>，用于展示黄页版式。正式运营前，请通过入驻表单提交真实商家信息，经核实后上线。
+        <strong>收录说明：</strong>以下商家均为<b>通过审核后自动收录</b>，信息由商户通过入驻表单自主提交，请自行甄别。
       </div>
 
-      <div class="shop-list">
-        <div class="shop-item">
-          <div class="shop-avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>
-          </div>
-          <div class="shop-main">
-            <h3 class="shop-name">示例 · 罗店农家乐（占位）</h3>
-            <div class="shop-tags"><span class="tag">农家乐</span><span class="tag">餐饮</span><span class="tag free">免费收录</span></div>
-            <p class="shop-meta">美兰湖附近农家菜，适合家庭聚餐与团建，可采摘。</p>
-          </div>
-        </div>
+      <div class="shop-list" id="shopList">
+        <p class="shop-loading" id="shopLoading" style="text-align:center;padding:24px 0;color:var(--muted);">正在加载商家列表…</p>
+      </div>
 
-        <div class="shop-item">
-          <div class="shop-avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l2-4h12l2 4M4 7h16v14H4zM4 11h16M9 11v4a1 1 0 002 0v-4M13 11v4a1 1 0 002 0v-4"/></svg>
-          </div>
-          <div class="shop-main">
-            <h3 class="shop-name">示例 · 古镇茶点铺（占位）</h3>
-            <div class="shop-tags"><span class="tag">小吃</span><span class="tag">伴手礼</span><span class="tag free">免费收录</span></div>
-            <p class="shop-meta">罗店古镇老街上的本地点心与茶饮小店。</p>
-          </div>
-        </div>
-
-        <div class="shop-item">
-          <div class="shop-avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M8 21v-9M12 21v-11M16 21v-9M20 21v-7M3 21h18M6 4l6-3 6 3-6 3z"/></svg>
-          </div>
-          <div class="shop-main">
-            <h3 class="shop-name">示例 · 罗店家政服务部（占位）</h3>
-            <div class="shop-tags"><span class="tag">家政</span><span class="tag">保洁</span><span class="tag free">免费收录</span></div>
-            <p class="shop-meta">日常保洁、钟点工、家电清洗等本地家政服务。</p>
-          </div>
-        </div>
-
-        <div class="shop-item">
-          <div class="shop-avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="3"/><circle cx="17" cy="17" r="3"/><path d="M4 17H2V8a2 2 0 012-2h8v11M14 8h4l3 4v5h-2M7 14v3M17 14v3"/></svg>
-          </div>
-          <div class="shop-main">
-            <h3 class="shop-name">示例 · 罗店汽修养护店（占位）</h3>
-            <div class="shop-tags"><span class="tag">汽修</span><span class="tag">养护</span><span class="tag free">免费收录</span></div>
-            <p class="shop-meta">日常保养、快修、轮胎服务，沪太公路沿线。</p>
-          </div>
-        </div>
-
-        <div class="shop-item">
-          <div class="shop-avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01"/></svg>
-          </div>
-          <div class="shop-main">
-            <h3 class="shop-name">示例 · 美兰湖周边民宿（占位）</h3>
-            <div class="shop-tags"><span class="tag">民宿</span><span class="tag">住宿</span><span class="tag free">免费收录</span></div>
-            <p class="shop-meta">美兰湖板块短租民宿，适合周末度假与亲子入住。</p>
-          </div>
-        </div>
+      <div id="shopEmpty" style="display:none;text-align:center;padding:40px 20px;">
+        <p style="font-size:18px;font-weight:600;margin-bottom:8px;">暂无已收录商家</p>
+        <p style="color:var(--muted);margin-bottom:18px;">成为罗店第一个被收录的商家，让更多人找到你。</p>
+        <a class="btn btn-primary" href="contact.html">提交入驻申请</a>
       </div>
 
       <div class="cta-band" style="margin-top:34px;">
@@ -142,5 +95,50 @@
 </footer>
 
 <script src="assets/js/main.js"></script>
+<script>
+(function () {
+  var list = document.getElementById('shopList');
+  var empty = document.getElementById('shopEmpty');
+  var loading = document.getElementById('shopLoading');
+  var ICONS = {
+    '商家收录': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>',
+    '厂房房源': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M8 21v-9M12 21v-11M16 21v-9M20 21v-7M3 21h18M6 4l6-3 6 3-6 3z"/></svg>',
+    '其他咨询': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>'
+  };
+  function el(tag, cls, text) {
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text != null) node.textContent = text;
+    return node;
+  }
+  fetch('assets/data/shops-data.json', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (items) {
+      var shops = (items || []).filter(function (it) { return it.type === '商家收录' && it.name; });
+      if (loading) loading.style.display = 'none';
+      if (!shops.length) { if (empty) empty.style.display = 'block'; return; }
+      if (empty) empty.style.display = 'none';
+      shops.forEach(function (it) {
+        var item = el('div', 'shop-item');
+        var av = el('div', 'shop-avatar');
+        av.innerHTML = ICONS['商家收录'] || ICONS['其他咨询'];
+        var main = el('div', 'shop-main');
+        main.appendChild(el('h3', 'shop-name', it.name));
+        var tags = el('div', 'shop-tags');
+        if (it.addr) tags.appendChild(el('span', 'tag', it.addr));
+        tags.appendChild(el('span', 'tag free', '已收录'));
+        main.appendChild(tags);
+        if (it.intro) main.appendChild(el('p', 'shop-meta', it.intro));
+        if (it.phone) main.appendChild(el('p', 'shop-meta', '电话：' + it.phone));
+        item.appendChild(av);
+        item.appendChild(main);
+        list.appendChild(item);
+      });
+    })
+    .catch(function () {
+      if (loading) loading.textContent = '商家列表加载失败，请稍后刷新查看。';
+    });
+})();
+</script>
 </body>
 </html>

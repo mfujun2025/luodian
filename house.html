@@ -57,7 +57,17 @@
       </article>
 
       <div class="notice warn" style="margin-top:22px;">
-        <strong>本站仅做信息展示：</strong>房源信息由房东/中介自主提交，本站不参与交易、不担保房源真实性，请务必线下核验后交易。
+        <strong>本站仅做信息展示：</strong>以下房源均为<b>通过审核后自动收录</b>，由房东/中介自主提交，本站不参与交易、不担保房源真实性，请务必线下核验后交易。
+      </div>
+
+      <div class="shop-list" id="houseList" style="margin-top:24px;">
+        <p class="shop-loading" id="houseLoading" style="text-align:center;padding:24px 0;color:var(--muted);">正在加载房源列表…</p>
+      </div>
+
+      <div id="houseEmpty" style="display:none;text-align:center;padding:40px 20px;">
+        <p style="font-size:18px;font-weight:600;margin-bottom:8px;">暂无已收录房源</p>
+        <p style="color:var(--muted);margin-bottom:18px;">厂房、仓库、商铺信息提交后经审核即可在此展示。</p>
+        <a class="btn btn-primary" href="contact.html">提交房源信息</a>
       </div>
 
       <div class="cta-band" style="margin-top:34px;">
@@ -98,5 +108,45 @@
 </footer>
 
 <script src="assets/js/main.js"></script>
+<script>
+(function () {
+  var list = document.getElementById('houseList');
+  var empty = document.getElementById('houseEmpty');
+  var loading = document.getElementById('houseLoading');
+  function el(tag, cls, text) {
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text != null) node.textContent = text;
+    return node;
+  }
+  fetch('assets/data/shops-data.json', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (items) {
+      var houses = (items || []).filter(function (it) { return it.type === '厂房房源' && it.name; });
+      if (loading) loading.style.display = 'none';
+      if (!houses.length) { if (empty) empty.style.display = 'block'; return; }
+      if (empty) empty.style.display = 'none';
+      houses.forEach(function (it) {
+        var item = el('div', 'shop-item');
+        var av = el('div', 'shop-avatar');
+        av.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M8 21v-9M12 21v-11M16 21v-9M20 21v-7M3 21h18M6 4l6-3 6 3-6 3z"/></svg>';
+        var main = el('div', 'shop-main');
+        main.appendChild(el('h3', 'shop-name', it.name));
+        var tags = el('div', 'shop-tags');
+        if (it.addr) tags.appendChild(el('span', 'tag', it.addr));
+        tags.appendChild(el('span', 'tag free', '已收录'));
+        main.appendChild(tags);
+        if (it.intro) main.appendChild(el('p', 'shop-meta', it.intro));
+        if (it.phone) main.appendChild(el('p', 'shop-meta', '电话：' + it.phone));
+        item.appendChild(av);
+        item.appendChild(main);
+        list.appendChild(item);
+      });
+    })
+    .catch(function () {
+      if (loading) loading.textContent = '房源列表加载失败，请稍后刷新查看。';
+    });
+})();
+</script>
 </body>
 </html>
