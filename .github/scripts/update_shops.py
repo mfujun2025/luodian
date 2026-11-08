@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-"""GitHub Actions：审核通过的商家自动追加到 shops-data.json（幂等）"""
+"""GitHub Actions：同步飞书审核结果到 shops-data.json
+
+EVENT=merchant-approved  → 审核通过，幂等追加
+EVENT=merchant-rejected  → 审核驳回，按 record_id 下架（不存在则什么都不做）
+"""
 import json, os, sys
 
 CWD = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # 仓库根
@@ -20,6 +24,13 @@ def pick(value):
     return str(value).strip()
 
 
+def save(shops):
+    with open(DATA, "w", encoding="utf-8") as f:
+        json.dump(shops, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+
+
+event = pick(os.environ.get("EVENT", "merchant-approved"))
 payload_raw = os.environ.get("PAYLOAD", "")
 if not payload_raw:
     print("NO_PAYLOAD")
@@ -36,13 +47,22 @@ if not record_id:
     print("NO_RECORD_ID")
     sys.exit(1)
 
+with open(DATA, "r", encoding="utf-8-sig") as f:   # 兼容带 BOM 的文件
+    shops = json.load(f)
+
+if event == "merchant-rejected":
+    remain = [s for s in shops if s.get("record_id") != record_id]
+    if len(remain) == len(shops):
+        print("NOT_FOUND", record_id, "nothing to remove")
+        sys.exit(0)
+    save(remain)
+    print("REMOVED", record_id, "total", len(remain))
+    sys.exit(0)
+
 biz_type = pick(payload.get("type"))
 if biz_type not in ALLOWED_TYPES:
     print("SKIP_TYPE", record_id, biz_type)
     sys.exit(0)
-
-with open(DATA, "r", encoding="utf-8-sig") as f:   # 兼容带 BOM 的文件
-    shops = json.load(f)
 
 # 幂等：同一 record_id 已存在则跳过
 if any(s.get("record_id") == record_id for s in shops):
@@ -58,7 +78,5 @@ shops.append({
     "intro": pick(payload.get("intro")),
 })
 
-with open(DATA, "w", encoding="utf-8") as f:
-    json.dump(shops, f, ensure_ascii=False, indent=2)
-
+save(shops)
 print("APPENDED", record_id, biz_type, "total", len(shops))
