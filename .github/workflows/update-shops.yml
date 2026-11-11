@@ -4,6 +4,11 @@ on:
   repository_dispatch:
     types: [merchant-approved, merchant-rejected]
 
+# 同一时刻只跑一个同步任务，避免连续审核动作并发写同一文件导致 push 冲突
+concurrency:
+  group: shops-data-sync
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
@@ -28,5 +33,6 @@ jobs:
             echo "no changes, skip commit"
           else
             git commit -m "同步审核结果到商家数据 [skip ci]"
+            git pull --rebase origin main || true
             git push
           fi
