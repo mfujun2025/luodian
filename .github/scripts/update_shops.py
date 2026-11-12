@@ -60,23 +60,36 @@ if event == "merchant-rejected":
     sys.exit(0)
 
 biz_type = pick(payload.get("type"))
-if biz_type not in ALLOWED_TYPES:
-    print("SKIP_TYPE", record_id, biz_type)
-    sys.exit(0)
-
-# 幂等：同一 record_id 已存在则跳过
-if any(s.get("record_id") == record_id for s in shops):
-    print("ALREADY_EXISTS", record_id)
-    sys.exit(0)
-
-shops.append({
+entry = {
     "record_id": record_id,
     "type": biz_type,
     "name": pick(payload.get("name")),
     "phone": pick(payload.get("phone")),
     "addr": pick(payload.get("addr")),
     "intro": pick(payload.get("intro")),
-})
+}
+index = next((i for i, s in enumerate(shops) if s.get("record_id") == record_id), None)
 
+# 类型被改成咨询类：已上架的要撤下
+if biz_type not in ALLOWED_TYPES:
+    if index is None:
+        print("SKIP_TYPE", record_id, biz_type)
+        sys.exit(0)
+    del shops[index]
+    save(shops)
+    print("REMOVED_TYPE", record_id, biz_type, "total", len(shops))
+    sys.exit(0)
+
+# 已存在则用最新资料覆盖（审核通过后改了名称/电话/地址也能同步）
+if index is not None:
+    if shops[index] == entry:
+        print("UNCHANGED", record_id)
+        sys.exit(0)
+    shops[index] = entry
+    save(shops)
+    print("UPDATED", record_id, biz_type, "total", len(shops))
+    sys.exit(0)
+
+shops.append(entry)
 save(shops)
 print("APPENDED", record_id, biz_type, "total", len(shops))
