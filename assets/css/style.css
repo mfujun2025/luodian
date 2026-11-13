@@ -245,7 +245,7 @@ td a { color: var(--brick); font-weight: 600; }
 
 /* ===================== 页脚 ===================== */
 .site-footer { background: var(--navy-deep); color: rgba(255,255,255,.72); margin-top: 56px; padding: 44px 0 26px; font-size: 14px; }
-.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px; margin-bottom: 30px; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; margin-bottom: 30px; }
 .footer-brand { font-family: var(--font-serif); font-size: 20px; font-weight: 900; color: var(--white); margin-bottom: 10px; }
 .footer-col h4 { color: var(--gold); font-size: 14px; letter-spacing: 2px; margin-bottom: 12px; }
 .footer-col a { display: block; color: rgba(255,255,255,.72); padding: 8px 0; }
